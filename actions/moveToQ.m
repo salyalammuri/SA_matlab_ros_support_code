@@ -1,7 +1,10 @@
-function res = moveToQ(config)
+function [res,q] = moveToQ(config)
 % moveToQ 
 % Move to joint configuration prescribed by config
 % 
+% Expansion/TODO: 
+% - Check if robot already at desired position. Then skip action calls.
+%
 % Inputs
 % config (string):    qr, qz... can expand in future
 %

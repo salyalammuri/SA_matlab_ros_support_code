@@ -1,5 +1,5 @@
 function [res,state] = doGrip(type)
-%-----
+%--------------------------------------------------------------------------
 % Tell gripper to either pick or place via the ros gripper action client
 %
 % Input: type (string) - 'pick' or 'place'
@@ -15,7 +15,7 @@ function [res,state] = doGrip(type)
     grip_msg = rosmessage(grip_action_client);
 
     %% Set Grip Pos by default to pick / close gripper
-    gripPos = 0.225; 
+    gripPos = 0.23; % 0.225 for upright bottles tends to slip. 
 
     % Modify it if place (i.e. open)
     if strcmp(type,'place')

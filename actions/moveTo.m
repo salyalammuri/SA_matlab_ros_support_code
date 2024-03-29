@@ -7,6 +7,9 @@ function traj_result = moveTo(mat_R_T_M,ops)
     % 01 Set goal or waypoints as a homogeneous transform
     % 02 Convert to joint angles via IKs
     %
+    % Expansion/TODO:
+    % - Check if robot already at desired position. Then skip action calls.
+    %
     % Inputs
     % mat_R_T_M [4x4]: object pose wrt to base_link
     % ops (dictionary): contains options like debug, toolFlag, traj_steps, traj_duration, etc

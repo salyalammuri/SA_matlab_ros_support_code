@@ -37,22 +37,26 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
     % mat_R_T_M(1:3,1:3) = rpy2r(0, pi/2, -pi); % Should be correct
     
     %  From orgnizers
-    T=eul2tform([-pi/2 -pi 0]);
+    T=eul2tform([-pi/2 -pi 0]); % ZYX axis
     mat_R_T_M(1:3,1:3) = T(1:3,1:3);
             
     %% 4. Current Robot Pose in Cartesian Format:
-    tftree = rostf('DataFormat','struct');     
+    tftree       = rostf('DataFormat','struct');     
+    base         = 'base_link';
+    end_effector = 'tool0'; % When finger is properly modeled use 'gripper_tip_link'
     
-    % Get gripper_tip_link pose wrt tzo base via getTransform(tftree,targetframe,sourceframe), where sourceframe is the reference frame 
+    % Get end-effector pose wrt to base via getTransform(tftree,targetframe,sourceframe), where sourceframe is the reference frame 
     try
-        current_pose = getTransform(tftree,'gripper_tip_link','base', rostime('now'), 'Timeout', tf_listening_time);
+        current_pose = getTransform(tftree,end_effector,base,rostime('now'),'Timeout', tf_listening_time);
     catch
         % Try again
-        current_pose = getTransform(tftree,'gripper_tip_link','base', rostime('now'), 'Timeout', tf_listening_time);
+        current_pose = getTransform(tftree,end_effector,base,rostime('now'),'Timeout', tf_listening_time);
     end
     
     % Convert gripper pose to matlab format
-    mat_R_T_G = ros2matlabPose(current_pose);
+    frameAdjustmentFlag = 1; % Indicates matlab's base_link does not match ros. Need adjustment.
+    toolAdjustmentFlag = 1;  % Indicates we have fingers but have not adjusted IKs for it.
+    mat_R_T_G = ros2matlabPose(current_pose,frameAdjustmentFlag,toolAdjustmentFlag);
     
     % Set pick orientation equal to starting pose (gripper down).
     % mat_R_T_M(1:3,1:3) = mat_R_T_G(1:3,1:3); 
@@ -61,5 +65,5 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
     % lift goal by difference.
     mat_R_T_M(1:2,4) = mat_R_T_M(2:-1:1,4); % Invert x and y
     mat_R_T_M(1,4) = -mat_R_T_M(1,4); % Change y to negative
-    mat_R_T_M(3,4) = mat_R_T_M(3,4) + 0.1670 + 0.02; % manually account for tool0 to tip if we do not attach rigid tool
+    mat_R_T_M(3,4) = mat_R_T_M(3,4) + 0.1670; % + 0.02; % manually account for tool0 to tip if we do not attach rigid tool
 end

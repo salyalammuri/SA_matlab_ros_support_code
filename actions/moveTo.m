@@ -48,6 +48,9 @@ function traj_result = moveTo(mat_R_T_M,ops)
     
     % Create action goal message from client
     traj_goal = rosmessage(pick_traj_act_client); 
+
+    %% Testing if setting FeedbackFcn to 0 minimizes the loss connection
+    pick_traj_act_client.FeedbackFcn = [];     
     
     % Convert to trajectory_msgs/FollowJointTrajectory
     disp('Converting to JointTrajectory format...');

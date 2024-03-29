@@ -21,6 +21,9 @@ function [res,q] = moveToQ(config)
     
     % Create action goal message from client
     traj_goal = rosmessage(pick_traj_act_client); 
+
+    %% Testing if setting FeedbackFcn to 0 minimizes the loss connection
+    pick_traj_act_client.FeedbackFcn = [];      
     
     % Set to qr
     if nargin == 0 || strcmp(config,'qr')

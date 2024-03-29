@@ -1,4 +1,4 @@
-function matlab_pose = ros2matlabPose(p,frameAdjustment)
+function matlab_pose = ros2matlabPose(p,frameAdjustment,toolAdjustmentFlag)
     %----------------------------------------------------------------------
     % ros2matlabPose
     % Converts ros pose to matlab pose according to type. Handles two Pose
@@ -32,15 +32,20 @@ function matlab_pose = ros2matlabPose(p,frameAdjustment)
     %----------------------------------------------------------------------
     
     %% Local Variables
-    endEffectorAdjustment = 0.165;
+    endEffectorAdjustment = 0;
 
     % Flags
     if nargin == 1
-        frameAdjustment = 0;
+        frameAdjustment    = 0;
         toolAdjustmentFlag = 0;
 
     else if nargin == 2
         toolAdjustmentFlag = 0;
+    end
+
+    % If there is indeed a toold adjustment flag then change the endEffector
+    if toolAdjustmentFlag
+        endEffectorAdjustment = 0.165;
     end
 
     % Normal. No frame adjustment needed

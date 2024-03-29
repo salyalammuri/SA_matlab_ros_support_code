@@ -15,30 +15,31 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
 
     %% Local variables
     tf_listening_time   = 10;    % Time (secs) to listen for transformation in ros
+    frameAdjustmentFlag = 1;     % Indicates matlab's base_link does not match ros. Need adjustment.
+    toolAdjustmentFlag  = 1;     % Indicates we have fingers but have not adjusted IKs for it.    
 
     %% 1. Get Poses from matlab wrt to World
     disp('Setting the goal...');
 
     % Robot's base_link and model pose wrt gazebo world origin
     W_T_R = get_model_pose('robot');
-    W_T_C = get_model_pose(model_name);
+    W_T_M = get_model_pose(model_name);
     
-    %% 2. Get Goal|Current Pose wrt to base link in matlab format
-    mat_W_T_R = ros2matlabPose(W_T_R);
-    mat_W_T_M = ros2matlabPose(W_T_C); % Frame at junction with table
+    %% 2. Get Goal|Current Pose wrt to **MATLAB** base link in matlab format
+    mat_W_T_R = ros2matlabPose(W_T_R, frameAdjustmentFlag, toolAdjustmentFlag);
+    mat_W_T_M = ros2matlabPose(W_T_M, frameAdjustmentFlag, toolAdjustmentFlag); % Frame at junction with table
     
-    % Change reference frame from gazebo world to robot's base_link
+    % Change reference frame from world to robot's base_link
     mat_R_T_M = inv(mat_W_T_R)*mat_W_T_M; 
 
-    z_offset = 0.0; % Can height is 20cm
-    mat_R_T_M(3,4) = mat_R_T_M(3,4) + z_offset; % Offset along +z to simulate knowing height of top of can.
+    z_offset = 0.052; % Can height is 5.2cm
+    mat_R_T_M(3,4) = mat_R_T_M(3,4) + z_offset; % Offset along +z_base_link to simulate knowing height of top of can.
 
-    %% 3. Modify orientation of robot pose to be  a top-down pick (see rviz gripper_tip_link vs base_link)
-    % mat_R_T_M(1:3,1:3) = rpy2r(0, pi/2, -pi); % Should be correct
-    
-    %  From orgnizers
-    T=eul2tform([-pi/2 -pi 0]); % ZYX axis
-    mat_R_T_M(1:3,1:3) = T(1:3,1:3);
+    %% 3. Modify orientation of robot pose to be a top-down pick (see tool0 vs base_link) w fingers aligned with matlab's y_world -axis
+    fing_along_y = eul2tform([-pi/2 -pi 0]); % ZYX axis
+    %fing_along_x = eul2tform([0 0 pi]); 
+
+    mat_R_T_M(1:3,1:3) = fing_along_y(1:3,1:3);
             
     %% 4. Current Robot Pose in Cartesian Format:
     tftree       = rostf('DataFormat','struct');     
@@ -54,8 +55,6 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
     end
     
     % Convert gripper pose to matlab format
-    frameAdjustmentFlag = 1; % Indicates matlab's base_link does not match ros. Need adjustment.
-    toolAdjustmentFlag = 1;  % Indicates we have fingers but have not adjusted IKs for it.
     mat_R_T_G = ros2matlabPose(current_pose,frameAdjustmentFlag,toolAdjustmentFlag);
     
     % Set pick orientation equal to starting pose (gripper down).
@@ -63,7 +62,7 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
     
     %% Hacks: set x-axis to y-axis and y-axis to x-axis and use tool0 but
     % lift goal by difference.
-    mat_R_T_M(1:2,4) = mat_R_T_M(2:-1:1,4); % Invert x and y
-    mat_R_T_M(1,4) = -mat_R_T_M(1,4); % Change y to negative
-    mat_R_T_M(3,4) = mat_R_T_M(3,4) + 0.1670; % + 0.02; % manually account for tool0 to tip if we do not attach rigid tool
+    %mat_R_T_M(1:2,4) = mat_R_T_M(2:-1:1,4); % Invert x and y
+    %mat_R_T_M(1,4) = -mat_R_T_M(1,4); % Change y to negative
+    %mat_R_T_M(3,4) = mat_R_T_M(3,4) + 0.1670; % + 0.02; % manually account for tool0 to tip if we do not attach rigid tool
 end

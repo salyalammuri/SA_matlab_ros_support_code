@@ -1,4 +1,4 @@
-function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name)
+function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name,get_robot_gripper_pose_flag)
 %--------------------------------------------------------------------------
 % Extract robot and model poses wrt to base_link. 
 % Use gazebo service to extract poses wrt to world.
@@ -7,7 +7,7 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
 %
 % Input:
 % model_name (string) - name of model available in gazebo simulation
-%
+% get_robot_gripper_pose_flag (doulbe) - flag to indicate whether we compute the robot gripper pose as well
 % Output: 
 % - mat_R_T_G [4x4] double - transformation from robot base_link to tip
 % - mart_R_T_M [4x4] double -  transformation from robot base_link to obj
@@ -43,24 +43,23 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
             
     %% 4. Current Robot Pose in Cartesian Format
     mat_R_T_G = eye(4,4);
-    %--------------------------------------------------------------------------
-    % % Temporarily commenting out this section
-    % tftree       = rostf('DataFormat','struct');     
-    % base         = 'base_link';
-    % end_effector = 'tool0'; % When finger is properly modeled use 'gripper_tip_link'
-    % 
-    % % Get end-effector pose wrt to base via getTransform(tftree,targetframe,sourceframe), where sourceframe is the reference frame 
-    % try
-    %     current_pose = getTransform(tftree,end_effector,base,rostime('now'),'Timeout', tf_listening_time);
-    % catch
-    %     % Try again
-    %     current_pose = getTransform(tftree,end_effector,base,rostime('now'),'Timeout', tf_listening_time);
-    % end
-    % 
-    % % Convert gripper pose to matlab format
-    % mat_R_T_G = ros2matlabPose(current_pose,frameAdjustmentFlag,toolAdjustmentFlag);
-    % 
-    % % Set pick orientation equal to starting pose (gripper down).
-    % % mat_R_T_M(1:3,1:3) = mat_R_T_G(1:3,1:3); 
-    %--------------------------------------------------------------------------
+    
+    if get_robot_gripper_pose_flag
+
+        % Temporarily commenting out this section
+        tftree       = rostf('DataFormat','struct');     
+        base         = 'base_link';
+        end_effector = 'tool0'; % When finger is properly modeled use 'gripper_tip_link'
+    
+        % Get end-effector pose wrt to base via getTransform(tftree,targetframe,sourceframe), where sourceframe is the reference frame 
+        try
+            current_pose = getTransform(tftree,end_effector,base,rostime('now'),'Timeout', tf_listening_time);
+        catch
+            % Try again
+            current_pose = getTransform(tftree,end_effector,base,rostime('now'),'Timeout', tf_listening_time);
+        end
+    
+        % Convert gripper pose to matlab format
+        mat_R_T_G = ros2matlabPose(current_pose,frameAdjustmentFlag,toolAdjustmentFlag);    
+    end
 end

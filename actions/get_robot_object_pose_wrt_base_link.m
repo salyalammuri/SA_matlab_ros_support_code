@@ -52,6 +52,7 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
     mat_R_T_G = eye(4,4);
 
     if get_robot_gripper_pose_flag
+
         tftree       = rostf('DataFormat','struct');     
         base         = 'base_link';
         end_effector = 'tool0'; % When finger is properly modeled use 'gripper_tip_link'
@@ -65,9 +66,6 @@ function [mat_R_T_G, mat_R_T_M] = get_robot_object_pose_wrt_base_link(model_name
         end
     
         % Convert gripper pose to matlab format
-        mat_R_T_G = ros2matlabPose(current_pose,frameAdjustmentFlag,toolAdjustmentFlag);
-        % 
-        % % Set pick orientation equal to starting pose (gripper down).
-        % % mat_R_T_M(1:3,1:3) = mat_R_T_G(1:3,1:3); 
-    end    
+        mat_R_T_G = ros2matlabPose(current_pose,frameAdjustmentFlag,toolAdjustmentFlag);    
+    end
 end

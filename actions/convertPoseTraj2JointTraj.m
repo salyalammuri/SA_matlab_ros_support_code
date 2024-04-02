@@ -43,7 +43,7 @@ function [mat_joint_traj,robot_joint_names] = convertPoseTraj2JointTraj(robot,ma
 
     % Check Joint Angle Integrity
     if max( abs(mat_cur_q) ) > 2*pi 
-        disp('Subscribed joints > 2*pi. Not possible. Consider restarting gazebo...')
+        error('Subscribed joints > 2*pi. Not possible. Consider restarting gazebo...')
     end
     
     % Elbow Down a problem? Force elbow and w4 guesses:

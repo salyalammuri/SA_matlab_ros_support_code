@@ -96,8 +96,8 @@ function myImgStruct = collect_obj_images(model_name)
        
         %% Read Image
         myImg = rosReadImage(rgbImgSub.LatestMessage); 
-        disp('Recorded img %d of %d...\n',i,total_operations);
-        
+        fprintf('Recorded img %d of %d...\n',i,total_operations);
+
         % Visualize 
         if optns('debug')
             imshow(myImg)

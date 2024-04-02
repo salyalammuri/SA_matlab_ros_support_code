@@ -33,8 +33,8 @@ elseif strcmp(type,'manual')
     goal = [0.8, -0.04, 0.15, -pi/2, -pi 0];     %[px,py,pz, z y z]
     mat_R_T_M = set_manual_goal(goal);
 else
-    % Manually
-    goal = [0.8, -0.04, 0.10, -pi/2, -pi 0];     %[px,py,pz, z y z]
+    % Manually: need to adjust for ros2matlab differences in coord frames
+    goal = [-1*-0.04, 0.8, 0.10, -pi/2, -pi 0];     %[py,px,pz, z y z]
     mat_R_T_M = set_manual_goal(goal);
 end
 

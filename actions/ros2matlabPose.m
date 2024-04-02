@@ -74,7 +74,7 @@ function matlab_pose = ros2matlabPose(p,frameAdjustment,toolAdjustmentFlag)
                                 p.Transform.Rotation.Z]);
         end
 
-    % x=y, y=-x, z=z. Adjust
+    % ros_x=>mat_y, ros_y=>-mat_x, z=z. Adjust
     else
         % 
         if strcmp(p.MessageType, 'gazebo_msgs/GetModelStateResponse')

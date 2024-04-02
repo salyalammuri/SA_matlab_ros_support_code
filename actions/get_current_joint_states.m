@@ -16,7 +16,11 @@ function [mat_cur_q,robot_joint_names] = get_current_joint_states
     joint_state_sub = rossubscriber("/joint_states", 'DataFormat','struct');
 
     % Receive message in ROS format
-    ros_cur_jnt_state_msg = receive(joint_state_sub,1);
+    try
+        ros_cur_jnt_state_msg = receive(joint_state_sub,2);
+    catch
+        ros_cur_jnt_state_msg = receive(joint_state_sub,2);
+    end
    
     % Reorder from ROS format to Matlab format, need names.
     [mat_cur_q,robot_joint_names] = ros2matlabJoints(ros_cur_jnt_state_msg);

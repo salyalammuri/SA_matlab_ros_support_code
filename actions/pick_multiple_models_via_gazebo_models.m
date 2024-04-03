@@ -26,7 +26,7 @@ r = rosrate(10);
 for i=1:mod_sz
     nm = model_names{i};
     fprintf('Picking up model: %s \n',nm);
-    [~,mat_R_T_M] = get_robot_object_pose_wrt_base_link(nm);
+    [~,mat_R_T_M] = get_robot_object_pose_wrt_base_link(nm,0);
 
 
     %% 04 Pick Model
@@ -37,8 +37,20 @@ for i=1:mod_sz
     %% 05 Place
     if ~ret
         disp('Attempting place...')
-        greenBin = [-0.4, -0.45, 0.25, -pi/2, -pi 0];
-        place_pose = set_manual_goal(greenBin);
+        
+        % Set bin goals
+        greenBin = [-0.4, -0.45, 0.25, -pi/2, -pi 0]; % left
+        blueBin  = [-0.4,  0.45, 0.25, -pi/2, -pi 0]; % right
+        
+        % Set place pose to blue bin only if it is a bottle
+        if contains(nm,'Bottle')
+            goal_pose = blueBin; 
+        else
+            goal_pose = greenBin;
+        end
+
+        place_pose = set_manual_goal(goal_pose);
+
         strategy = 'topdown';
         fprintf('Moving to bin...');
         ret = moveToBin(strategy,mat_R_T_M,place_pose);

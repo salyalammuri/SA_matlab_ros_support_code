@@ -53,7 +53,7 @@ pause(2)
 disp('Getting goal...')
 type = 'manual';
 
-% Via Gazebo
+% Via Manual
 if strcmp(type,'manual')
    goal = [0.4828, 0.6504, 0.12, -pi/3, -pi 0];    %[px,py,pz, z y z]                  
     mat_R_T_M = set_manual_goal(goal);        % yCan2
@@ -114,7 +114,7 @@ end
 disp('Getting goal...')
 type = 'manual';
 
-% Via Gazebo
+% Via Manual
 if strcmp(type,'manual')
    goal = [7.2366, -8.0892, -0.3971, -pi/3, -pi 0];    %[px,py,pz, z y z]                  
     mat_R_T_M = set_manual_goal(goal);        % yCan4

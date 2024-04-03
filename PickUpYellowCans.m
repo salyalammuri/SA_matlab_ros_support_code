@@ -55,8 +55,12 @@ type = 'manual';
 
 % Via Manual
 if strcmp(type,'manual')
-   goal = [0.4828, 0.6504, 0.12, -pi/3, -pi 0];    %[px,py,pz, z y z]                  
+   goal = [0.4828, 0.6504, 0.12, pi, -pi 0];    %[px,py,pz, z y z]                  
     mat_R_T_M = set_manual_goal(goal);        % yCan2
+    else
+    % Manually: need to adjust for ros2matlab differences in coord frames
+    goal = [-1*0.4828, 0.6504, 0.12, pi, -pi 0];     %[py,px,pz, z y z]
+    mat_R_T_M = set_manual_goal(goal);
 end 
 
 %% 04 Pick Model
